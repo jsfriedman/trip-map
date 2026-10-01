@@ -16,8 +16,7 @@ export function createMap(elementId) {
 }
 
 function describePoint(point) {
-  const battery = point.batt !== undefined ? `<br>🔋 ${point.batt}%` : '';
-  return `<strong>${formatTimestamp(point.ts)}</strong><br>${timeAgo(point.ts)}${battery}`;
+  return `<strong>${formatTimestamp(point.ts)}</strong><br>${timeAgo(point.ts)}`;
 }
 
 // The car emoji faces left (west) on every major platform, so mirror it when heading east.
