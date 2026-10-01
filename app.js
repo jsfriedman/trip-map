@@ -66,6 +66,17 @@ function ensureMap() {
   trailLayer = L.layerGroup().addTo(map);
 }
 
+// The car emoji faces left (west) on every major platform, so mirror it when heading east.
+function carIcon(isHeadingEast) {
+  const carClass = isHeadingEast ? 'car car-east' : 'car';
+  return L.divIcon({
+    className: '',
+    html: `<div class="latest-car"><span class="${carClass}">🚗</span></div>`,
+    iconSize: [38, 38],
+    popupAnchor: [0, -18],
+  });
+}
+
 function renderTrail(points) {
   trailLayer.clearLayers();
   if (points.length === 0) return;
@@ -79,9 +90,9 @@ function renderTrail(points) {
   });
 
   const latest = points.at(-1);
-  const latestIcon = L.divIcon({ className: '', html: '<div class="latest-pin"></div>', iconSize: [22, 22] });
-  L.marker([latest.lat, latest.lon], { icon: latestIcon, zIndexOffset: 1000 })
-    .bindPopup(`📍 Latest check-in<br>${describePoint(latest)}`)
+  const previous = points.at(-2);
+  L.marker([latest.lat, latest.lon], { icon: carIcon(previous !== undefined && latest.lon > previous.lon), zIndexOffset: 1000 })
+    .bindPopup(`🚗 Latest check-in<br>${describePoint(latest)}`)
     .addTo(trailLayer);
 
   if (!session.hasFitBounds) {

@@ -138,15 +138,20 @@ html, body {
   cursor: pointer;
 }
 
-.latest-pin {
-  width: 22px;
-  height: 22px;
+.latest-car {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
   border-radius: 50%;
-  background: var(--accent);
-  border: 3px solid #ffffff;
+  background: #ffffff;
+  border: 3px solid var(--accent);
   box-shadow: 0 0 0 0 rgb(217 72 15 / 0.6);
   animation: pulse 2s infinite;
 }
+
+.car { font-size: 20px; line-height: 1; }
+.car-east { transform: scaleX(-1); }
 
 @keyframes pulse {
   70% { box-shadow: 0 0 0 16px rgb(217 72 15 / 0); }
@@ -154,5 +159,5 @@ html, body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .latest-pin { animation: none; }
+  .latest-car { animation: none; }
 }
