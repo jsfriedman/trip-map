@@ -8,3 +8,5 @@ A password-protected road trip map, hosted on GitHub Pages.
 npm test        # decrypt + time unit tests
 npm run serve   # http://localhost:8000
 ```
+
+`post.html` is the phone's photo uploader (see trip-backend's README). Photos are encrypted with per-photo keys stored inside `photos.enc.json`.

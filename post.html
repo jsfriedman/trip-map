@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Trip Photo</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📷</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="lock-screen">
+    <section class="card unlock-card post-card">
+      <h1>📷 Trip Photo</h1>
+
+      <form id="token-form" class="post-section" hidden>
+        <p class="muted">One-time setup: paste the <strong>trip-phone</strong> GitHub token. It stays on this device only.</p>
+        <input id="token-input" type="password" autocomplete="off" placeholder="github_pat_…" required>
+        <button type="submit">Save token</button>
+      </form>
+
+      <div id="capture-section" class="post-section" hidden>
+        <label for="photo-input" class="primary-button" id="take-photo-label">Take photo</label>
+        <input id="photo-input" type="file" accept="image/*" capture="environment" hidden>
+        <img id="preview-image" class="preview-image" alt="Photo to send" hidden>
+        <textarea id="caption-input" class="caption-input" rows="2" maxlength="280" placeholder="Caption (optional)" hidden></textarea>
+        <button id="send-button" type="button" hidden>Send</button>
+        <p id="post-status" class="muted" role="status"></p>
+      </div>
+
+      <p class="post-footer muted">
+        <a href="./">View map</a> ·
+        <button id="change-token-button" class="link-button" type="button">Change token</button>
+      </p>
+    </section>
+  </main>
+  <script type="module" src="post.js"></script>
+</body>
+</html>

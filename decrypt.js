@@ -37,3 +37,9 @@ export async function decryptTrail(blob, password) {
   if (!Array.isArray(points)) throw new Error('Trail data is not a list of points');
   return points;
 }
+
+export async function decryptPhoto(ciphertext, keyBase64, ivBase64) {
+  const key = await crypto.subtle.importKey('raw', base64ToBytes(keyBase64), 'AES-GCM', false, ['decrypt']);
+  const plaintext = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: base64ToBytes(ivBase64) }, key, ciphertext);
+  return new Uint8Array(plaintext);
+}

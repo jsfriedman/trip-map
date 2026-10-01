@@ -1,5 +1,7 @@
 import { decryptTrail, WrongPasswordError } from './decrypt.js';
-import { timeAgo } from './time.js';
+import { fetchEncryptedJson } from './encrypted-file.js';
+import { loadPhotoIndex, renderPhotos } from './photos.js';
+import { formatTimestamp, timeAgo } from './time.js';
 
 const TRAIL_URL = 'trail.enc.json';
 const METERS_PER_MILE = 1609.344;
@@ -33,22 +35,13 @@ const storage = {
   },
 };
 
-let session = { password: null, lastIv: null, points: [], hasFitBounds: false };
+const EMPTY_PHOTO_INDEX = { photos: [], iv: null };
+const EMPTY_SESSION = { password: null, lastIv: null, points: [], photoIndex: EMPTY_PHOTO_INDEX, hasFitBounds: false };
+
+let session = EMPTY_SESSION;
 let map = null;
 let trailLayer = null;
-
-async function fetchEncryptedTrail() {
-  const response = await fetch(`${TRAIL_URL}?t=${Date.now()}`, { cache: 'no-store' });
-  if (response.status === 404) return null;
-  if (!response.ok) throw new Error(`Could not load the trail (HTTP ${response.status})`);
-  return response.json();
-}
-
-function formatTimestamp(timestampMs) {
-  return new Date(timestampMs).toLocaleString([], {
-    weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
-  });
-}
+let photoLayer = null;
 
 function describePoint(point) {
   const battery = point.batt !== undefined ? `<br>🔋 ${point.batt}%` : '';
@@ -64,6 +57,7 @@ function ensureMap() {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
   }).addTo(map);
   trailLayer = L.layerGroup().addTo(map);
+  photoLayer = L.layerGroup().addTo(map);
 }
 
 // The car emoji faces left (west) on every major platform, so mirror it when heading east.
@@ -109,8 +103,11 @@ function totalMiles(points) {
   return meters / METERS_PER_MILE;
 }
 
+const pluralize = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
+
 function renderStatus() {
   const { points } = session;
+  const { photos } = session.photoIndex;
   if (points.length === 0) {
     elements.statusHeadline.textContent = 'No check-ins yet';
     elements.statusDetails.textContent = 'The first one will show up here soon.';
@@ -118,13 +115,14 @@ function renderStatus() {
   }
   const latest = points.at(-1);
   const miles = Math.round(totalMiles(points)).toLocaleString();
-  const checkInLabel = points.length === 1 ? 'check-in' : 'check-ins';
+  const photoSummary = photos.length > 0 ? ` · ${pluralize(photos.length, 'photo', 'photos')}` : '';
   elements.statusHeadline.textContent = `Last seen ${timeAgo(latest.ts)}`;
-  elements.statusDetails.textContent = `${formatTimestamp(latest.ts)} · ${points.length} ${checkInLabel} · ~${miles} mi`;
+  elements.statusDetails.textContent =
+    `${formatTimestamp(latest.ts)} · ${pluralize(points.length, 'check-in', 'check-ins')} · ~${miles} mi${photoSummary}`;
 }
 
 async function loadTrail(password) {
-  const blob = await fetchEncryptedTrail();
+  const blob = await fetchEncryptedJson(TRAIL_URL);
   if (blob === null) return { points: [], iv: null };
   if (blob.iv === session.lastIv) return { points: session.points, iv: blob.iv };
   const points = await decryptTrail(blob, password);
@@ -146,22 +144,30 @@ function showLock(errorMessage) {
   elements.passwordInput.focus();
 }
 
+async function loadEverything(password) {
+  const [trail, photoIndex] = await Promise.all([loadTrail(password), loadPhotoIndex(password, session.photoIndex)]);
+  return { ...trail, photoIndex };
+}
+
 async function unlock(password, remember) {
-  const { points, iv } = await loadTrail(password);
-  session = { ...session, password, points, lastIv: iv };
+  const { points, iv, photoIndex } = await loadEverything(password);
+  session = { ...session, password, points, lastIv: iv, photoIndex };
   if (remember) storage.write(password);
   showMap();
   renderTrail(points);
+  renderPhotos(photoLayer, photoIndex.photos);
   renderStatus();
 }
 
 async function refresh() {
   if (!session.password || document.hidden) return;
   try {
-    const { points, iv } = await loadTrail(session.password);
-    if (iv === session.lastIv) return renderStatus();
-    session = { ...session, points, lastIv: iv };
-    renderTrail(points);
+    const { points, iv, photoIndex } = await loadEverything(session.password);
+    const trailChanged = iv !== session.lastIv;
+    const photosChanged = photoIndex !== session.photoIndex;
+    session = { ...session, points, lastIv: iv, photoIndex };
+    if (trailChanged) renderTrail(points);
+    if (photosChanged) renderPhotos(photoLayer, photoIndex.photos);
     renderStatus();
   } catch (error) {
     if (error instanceof WrongPasswordError) return forget('The password changed. Please enter the new one.');
@@ -171,7 +177,7 @@ async function refresh() {
 
 function forget(errorMessage) {
   storage.clear();
-  session = { password: null, lastIv: null, points: [], hasFitBounds: false };
+  session = EMPTY_SESSION;
   elements.passwordInput.value = '';
   showLock(errorMessage);
 }

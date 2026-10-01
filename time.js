@@ -14,3 +14,9 @@ export function timeAgo(timestampMs, nowMs = Date.now()) {
   }
   return 'just now';
 }
+
+export function formatTimestamp(timestampMs) {
+  return new Date(timestampMs).toLocaleString([], {
+    weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+  });
+}
