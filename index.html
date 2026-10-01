@@ -26,10 +26,21 @@
 
   <div id="map-screen" class="map-screen" hidden>
     <div id="map" class="map"></div>
-    <aside class="card status-card">
+    <aside id="status-card" class="card status-card">
       <div id="status-headline" class="status-headline">Loading…</div>
       <div id="status-details" class="muted"></div>
-      <button id="forget-button" class="link-button" type="button">Forget password</button>
+      <nav class="status-links">
+        <a id="live-map-link" href="#" hidden>← Live map</a>
+        <a id="past-trips-link" href="#trips" hidden>Past trips</a>
+        <button id="forget-button" class="link-button" type="button">Forget password</button>
+      </nav>
+    </aside>
+    <aside id="trips-panel" class="card status-card trips-panel" hidden>
+      <div class="trips-header">
+        <h2>Past trips</h2>
+        <a href="#">Close</a>
+      </div>
+      <ul id="trips-list" class="trips-list"></ul>
     </aside>
   </div>
 

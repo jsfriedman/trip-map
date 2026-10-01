@@ -1,21 +1,20 @@
 import { decryptPhoto, decryptTrail } from './decrypt.js';
 import { fetchEncryptedJson } from './encrypted-file.js';
-import { formatTimestamp, timeAgo } from './time.js';
+import { formatTimestamp, timeAgo } from './format.js';
 
-const PHOTO_INDEX_URL = 'photos.enc.json';
 const photoUrlCache = new Map();
 
-export async function loadPhotoIndex(password, previous) {
-  const blob = await fetchEncryptedJson(PHOTO_INDEX_URL);
+export async function loadPhotoIndex(password, previous, dataRoot) {
+  const blob = await fetchEncryptedJson(`${dataRoot}photos.enc.json`);
   if (blob === null) return { photos: [], iv: null };
   if (blob.iv === previous.iv) return previous;
   const photos = await decryptTrail(blob, password);
   return { photos: [...photos].sort((first, second) => first.ts - second.ts), iv: blob.iv };
 }
 
-function loadPhotoUrl(photo) {
+function loadPhotoUrl(photo, dataRoot) {
   if (!photoUrlCache.has(photo.id)) {
-    const urlPromise = fetch(`photos/${encodeURIComponent(photo.id)}.bin`)
+    const urlPromise = fetch(`${dataRoot}photos/${encodeURIComponent(photo.id)}.bin`)
       .then((response) => {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         return response.arrayBuffer();
@@ -58,12 +57,12 @@ function buildPopupContent(photo) {
   return { figure, link, image, status };
 }
 
-function showPhotoWhenOpened(marker, photo) {
+function showPhotoWhenOpened(marker, photo, dataRoot) {
   const content = buildPopupContent(photo);
   marker.bindPopup(content.figure, { minWidth: 240, maxWidth: 280 });
   marker.on('popupopen', async (event) => {
     try {
-      const url = await loadPhotoUrl(photo);
+      const url = await loadPhotoUrl(photo, dataRoot);
       content.image.onload = () => event.popup.update();
       content.image.src = url;
       content.link.href = url;
@@ -83,11 +82,11 @@ const photoIcon = () => L.divIcon({
   popupAnchor: [0, -14],
 });
 
-export function renderPhotos(layer, photos) {
+export function renderPhotos(layer, photos, dataRoot) {
   layer.clearLayers();
   photos.forEach((photo) => {
     const marker = L.marker([photo.lat, photo.lon], { icon: photoIcon(), zIndexOffset: 500 });
-    showPhotoWhenOpened(marker, photo);
+    showPhotoWhenOpened(marker, photo, dataRoot);
     marker.addTo(layer);
   });
 }

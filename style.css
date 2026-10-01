@@ -206,3 +206,34 @@ html, body {
 .photo-popup-image { display: block; width: 100%; border-radius: 6px; }
 .photo-popup-status { margin: 0 0 6px; }
 .photo-popup figcaption { margin-top: 6px; line-height: 1.35; }
+
+.status-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  margin-top: 6px;
+  font-size: 0.85rem;
+}
+
+.status-links a { color: var(--accent); font-weight: 600; }
+.status-links .link-button { margin-top: 0; }
+
+.trips-panel { max-height: 60vh; overflow-y: auto; }
+.trips-header { display: flex; justify-content: space-between; align-items: baseline; }
+.trips-header h2 { margin: 0 0 8px; font-size: 1.05rem; }
+.trips-header a { color: var(--muted); font-size: 0.85rem; }
+
+.trips-list { list-style: none; margin: 0; padding: 0; }
+.trips-list li + li { border-top: 1px solid var(--border); }
+
+.trip-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 0;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.finish-flag { font-size: 20px; animation: none; }

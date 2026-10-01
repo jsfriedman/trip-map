@@ -20,3 +20,12 @@ export function formatTimestamp(timestampMs) {
     weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
   });
 }
+
+export function formatDateRange(startTs, endTs) {
+  const formatDate = (timestampMs) => new Date(timestampMs).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
+  const start = formatDate(startTs);
+  const end = formatDate(endTs);
+  return start === end ? start : `${start} – ${end}`;
+}
+
+export const pluralize = (count, singular, plural) => `${count} ${count === 1 ? singular : plural}`;
