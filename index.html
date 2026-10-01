@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Road Trip Check-In</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚗</text></svg>">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="lock-screen" class="lock-screen">
+    <form id="unlock-form" class="card unlock-card">
+      <h1>🚗 Road Trip Check-In</h1>
+      <p class="muted">Enter the password to see where we are.</p>
+      <input id="password-input" type="password" autocomplete="current-password" placeholder="Password" required>
+      <label class="remember">
+        <input id="remember-input" type="checkbox" checked>
+        Remember on this device
+      </label>
+      <button id="unlock-button" type="submit">Show the map</button>
+      <p id="unlock-error" class="error" role="alert" hidden></p>
+    </form>
+  </main>
+
+  <div id="map-screen" class="map-screen" hidden>
+    <div id="map" class="map"></div>
+    <aside class="card status-card">
+      <div id="status-headline" class="status-headline">Loading…</div>
+      <div id="status-details" class="muted"></div>
+      <button id="forget-button" class="link-button" type="button">Forget password</button>
+    </aside>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

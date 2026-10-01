@@ -1,0 +1,158 @@
+:root {
+  --background: #f4f1ea;
+  --surface: #ffffff;
+  --text: #1f2328;
+  --muted: #5f6670;
+  --accent: #d9480f;
+  --accent-text: #ffffff;
+  --trail: #d9480f;
+  --error: #c92a2a;
+  --border: #d8d4cb;
+  --shadow: 0 4px 20px rgb(0 0 0 / 0.15);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --background: #16181b;
+    --surface: #23262b;
+    --text: #eceef0;
+    --muted: #a3a9b1;
+    --accent: #ff7a3d;
+    --accent-text: #16181b;
+    --error: #ff8787;
+    --border: #3a3f46;
+    --shadow: 0 4px 20px rgb(0 0 0 / 0.5);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --background: #16181b;
+  --surface: #23262b;
+  --text: #eceef0;
+  --muted: #a3a9b1;
+  --accent: #ff7a3d;
+  --accent-text: #16181b;
+  --error: #ff8787;
+  --border: #3a3f46;
+  --shadow: 0 4px 20px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--background);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+[hidden] { display: none !important; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+.muted { color: var(--muted); }
+
+.lock-screen {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+
+.unlock-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 28px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.unlock-card h1 { margin: 0; font-size: 1.4rem; }
+.unlock-card p { margin: 0; }
+
+.unlock-card input[type="password"] {
+  font: inherit;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--background);
+  color: var(--text);
+}
+
+.remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.unlock-card button {
+  font: inherit;
+  font-weight: 600;
+  padding: 12px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--accent);
+  color: var(--accent-text);
+  cursor: pointer;
+}
+
+.unlock-card button:disabled { opacity: 0.6; cursor: wait; }
+
+.error { color: var(--error); font-size: 0.9rem; }
+
+.map-screen, .map { position: fixed; inset: 0; }
+
+.status-card {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 24px;
+  max-width: 380px;
+  padding: 14px 16px;
+  z-index: 1000;
+}
+
+.status-headline { font-weight: 600; font-size: 1.05rem; }
+
+.link-button {
+  margin-top: 6px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-size: 0.8rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.latest-pin {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 3px solid #ffffff;
+  box-shadow: 0 0 0 0 rgb(217 72 15 / 0.6);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  70% { box-shadow: 0 0 0 16px rgb(217 72 15 / 0); }
+  100% { box-shadow: 0 0 0 0 rgb(217 72 15 / 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .latest-pin { animation: none; }
+}
